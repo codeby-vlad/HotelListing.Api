@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HotelListing.Api.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController] 
     public class HotelsController : ControllerBase
     {
         private static List<Hotel> hotels = new List<Hotel>
@@ -14,7 +14,7 @@ namespace HotelListing.Api.Controllers
             new Hotel {Id = 1, Name = "Grand Plaza", Address = "123 Main St", Rating = 4.5},
             new Hotel {Id = 2, Name = "Ocean View", Address = "457 Beach Rd", Rating = 4.8 }
         };
-
+        
         // GET: api/<HotelsController>
         [HttpGet]
         public ActionResult<IEnumerable<Hotel>> Get()
