@@ -2,10 +2,12 @@
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace HotelListing.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class SeededCountriesAndHotels : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,7 +27,7 @@ namespace HotelListing.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "hotels",
+                name: "Hotels",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -37,18 +39,38 @@ namespace HotelListing.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_hotels", x => x.Id);
+                    table.PrimaryKey("PK_Hotels", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_hotels_Countries_CountryId",
+                        name: "FK_Hotels_Countries_CountryId",
                         column: x => x.CountryId,
                         principalTable: "Countries",
                         principalColumn: "CountryId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Countries",
+                columns: new[] { "CountryId", "Name", "ShortName" },
+                values: new object[,]
+                {
+                    { 1, "Norway", "NO" },
+                    { 2, "Bahamas", "BS" },
+                    { 3, "Spain", "ESP" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Hotels",
+                columns: new[] { "Id", "Address", "CountryId", "Name", "Rating" },
+                values: new object[,]
+                {
+                    { 1, "Oslo", 1, "Hilton", 4.7000000000000002 },
+                    { 2, "Barcelona", 3, "Marriott International", 4.7999999999999998 },
+                    { 3, "Nassau", 2, "Hyatt Hotels Corporation", 4.5 }
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_hotels_CountryId",
-                table: "hotels",
+                name: "IX_Hotels_CountryId",
+                table: "Hotels",
                 column: "CountryId");
         }
 
@@ -56,7 +78,7 @@ namespace HotelListing.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "hotels");
+                name: "Hotels");
 
             migrationBuilder.DropTable(
                 name: "Countries");

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelListing.Api.Migrations
 {
     [DbContext(typeof(HotelListingDbContext))]
-    [Migration("20250523153609_RenamedHotels")]
-    partial class RenamedHotels
+    [Migration("20250530151637_SeededCountriesAndHotels")]
+    partial class SeededCountriesAndHotels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,6 +43,26 @@ namespace HotelListing.Api.Migrations
                     b.HasKey("CountryId");
 
                     b.ToTable("Countries");
+
+                    b.HasData(
+                        new
+                        {
+                            CountryId = 1,
+                            Name = "Norway",
+                            ShortName = "NO"
+                        },
+                        new
+                        {
+                            CountryId = 2,
+                            Name = "Bahamas",
+                            ShortName = "BS"
+                        },
+                        new
+                        {
+                            CountryId = 3,
+                            Name = "Spain",
+                            ShortName = "ESP"
+                        });
                 });
 
             modelBuilder.Entity("HotelListing.Api.data.Hotel", b =>
@@ -71,6 +91,32 @@ namespace HotelListing.Api.Migrations
                     b.HasIndex("CountryId");
 
                     b.ToTable("Hotels");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "Oslo",
+                            CountryId = 1,
+                            Name = "Hilton",
+                            Rating = 4.7000000000000002
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "Barcelona",
+                            CountryId = 3,
+                            Name = "Marriott International",
+                            Rating = 4.7999999999999998
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Address = "Nassau",
+                            CountryId = 2,
+                            Name = "Hyatt Hotels Corporation",
+                            Rating = 4.5
+                        });
                 });
 
             modelBuilder.Entity("HotelListing.Api.data.Hotel", b =>

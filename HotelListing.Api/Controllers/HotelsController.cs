@@ -1,5 +1,6 @@
 ﻿using HotelListing.Api.data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,77 +10,83 @@ namespace HotelListing.Api.Controllers
     [ApiController] 
     public class HotelsController : ControllerBase
     {
-        private static List<Hotel> hotels = new List<Hotel>
+        private readonly HotelListingDbContext _context;
+
+        public HotelsController(HotelListingDbContext context)
         {
-            new Hotel {Id = 1, Name = "Grand Plaza", Address = "123 Main St", Rating = 4.5},
-            new Hotel {Id = 2, Name = "Ocean View", Address = "457 Beach Rd", Rating = 4.8 }
-        };
-        
-        // GET: api/<HotelsController>
-        [HttpGet]
-        public ActionResult<IEnumerable<Hotel>> Get()
-        {
-            return Ok(hotels);
+            _context = context;
         }
 
-        // GET api/<HotelsController>/5
-        [HttpGet("{id}")]
-        public ActionResult<Hotel> Get(int id)
+        // GET: api/Hotels
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Hotel>>> Get()
         {
-            var hotel = hotels.FirstOrDefault(h => h.Id == id);
-            if (hotel == null) 
-            { 
-              return NotFound();
+            return Ok(await _context.Hotels.ToListAsync());
+        }
+
+        // GET api/Hotels/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Hotel>> Get(int id)
+        {
+            var hotel = await _context.Hotels.FindAsync(id);
+            if (hotel == null)
+            {
+                return NotFound();
             }
             return Ok(hotel);
         }
 
-        // POST api/<HotelsController>
+        // POST api/Hotels
         [HttpPost]
-        public ActionResult<Hotel> Post([FromBody] Hotel newHotel)
+        public async Task<ActionResult<Hotel>> Post([FromBody] Hotel newHotel)
         {
-            if (hotels.Any(h => h.Id == newHotel.Id))
-            {
-                return BadRequest("Hotel with this Id already exists");
-            }
-
-            hotels.Add(newHotel);
+            _context.Hotels.Add(newHotel);
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = newHotel.Id }, newHotel);
         }
 
-        // PUT api/<HotelsController>/5
+        // PUT api/Hotels/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Hotel updatedHotel)
+        public async Task<ActionResult> Put(int id, [FromBody] Hotel updatedHotel)
         {
-            //if(!hotels.Any(h=>h.Id == updatedHotel.Id))
-            //{
-            //    return NotFound();
-            //}
-            var existingHotel = hotels.FirstOrDefault(h => h.Id == id);
-            
-            if(existingHotel == null)
+            if (id != updatedHotel.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            existingHotel.Name = updatedHotel.Name;
-            existingHotel.Address = updatedHotel.Address;
-            existingHotel.Rating = updatedHotel.Rating;
+            _context.Entry(updatedHotel).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Hotels.Any(h => h.Id == id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return NoContent();
         }
 
-        // DELETE api/<HotelsController>/5
+        // DELETE api/Hotels/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var existingHotel = hotels.FirstOrDefault(h => h.Id == id);
-            if (existingHotel == null)
+            var hotel = await _context.Hotels.FindAsync(id);
+            if (hotel == null)
             {
                 return NotFound(new { message = "Hotel not found" });
             }
-            
-            hotels.Remove(existingHotel);
+
+            _context.Hotels.Remove(hotel);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
     }

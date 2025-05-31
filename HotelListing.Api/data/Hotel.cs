@@ -1,4 +1,6 @@
-﻿namespace HotelListing.Api.data;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace HotelListing.Api.data;
 
 public class Hotel
 {
