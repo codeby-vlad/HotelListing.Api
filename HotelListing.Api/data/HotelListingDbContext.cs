@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using HotelListing.Api.Models.Hotels;
 
 namespace HotelListing.Api.data
 {
@@ -63,5 +64,6 @@ namespace HotelListing.Api.data
                 }
                 );
         }
+        public DbSet<HotelListing.Api.Models.Hotels.HotelDto> HotelDto { get; set; } = default!;
     }
 }
